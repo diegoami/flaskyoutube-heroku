@@ -11,7 +11,9 @@ from oauth2client import client
 
 
 app = flask.Flask(__name__)
+import uuid
 
+app.secret_key = str(uuid.uuid4())
 
 YOUTUBE_READ_WRITE_SCOPE = "https://www.googleapis.com/auth/youtube"
 YOUTUBE_API_SERVICE_NAME = "youtube"
