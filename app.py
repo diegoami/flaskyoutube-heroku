@@ -32,8 +32,9 @@ def execute_command(http_auth ):
   playlistItems = youtube.playlistItems().list(
           part='snippet', playlistId=liked
   ).execute()
+
   playlistItems2 = youtube.playlistItems().list(
-      part='snippet', playlistId=liked, pageToken=playlistItems['nextPageToken']
+      part='snippet', playlistId=liked, pageToken=playlistItems['nextPageToken'] if 'nextPageToken' in  playlistItems else None
   ).execute()
   items1 = playlistItems['items']
   items2 = playlistItems2['items']
