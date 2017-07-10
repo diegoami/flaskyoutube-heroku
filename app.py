@@ -3,8 +3,8 @@
 import json
 
 import flask
-import httplib2
 from flask import make_response
+from youtube3.youtube import *
 
 from apiclient import discovery
 from oauth2client import client
@@ -21,25 +21,11 @@ YOUTUBE_API_VERSION = "v3"
 
 
 def execute_command(http_auth ):
-  youtube = discovery.build(YOUTUBE_API_SERVICE_NAME , YOUTUBE_API_VERSION, http_auth)
-  #files =   youtube.channels().list(
-  #     part='contentDetails', mine="true"
-  #).execute()
-  channels = youtube.channels().list(
-      part='contentDetails', mine="true"
-  ).execute()
-  liked = channels['items'][0]['contentDetails']['relatedPlaylists']['likes']
-  playlistItems = youtube.playlistItems().list(
-          part='snippet', playlistId=liked
-  ).execute()
-
-  playlistItems2 = youtube.playlistItems().list(
-      part='snippet', playlistId=liked, pageToken=playlistItems['nextPageToken'] if 'nextPageToken' in  playlistItems else None
-  ).execute()
-  items1 = playlistItems['items']
-  items2 = playlistItems2['items']
-  items = items1 + items2
-
+  youtube = Youtube(discovery.build(YOUTUBE_API_SERVICE_NAME , YOUTUBE_API_VERSION, http_auth))
+  likedchannel = youtube.liked_channel()
+  videos1 = youtube.videos_in_channels(likedchannel)
+  videos2 = youtube.videos_in_channels(likedchannel, videos1['nextPageToken'] if 'nextPageToken' in videos1 else None )
+  items = list(videos1.values()) + list(videos2.values())
   return json.dumps(items )
 
 
